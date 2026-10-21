@@ -2,13 +2,19 @@
   "name": "macromuse",
   "version": "0.1.0",
   "dependencies": [
-    "nlohmann-json"
+    "sol2"
   ],
   "features": {
     "tests": {
       "description": "Test dependencies",
       "dependencies": [
         "catch2"
+      ]
+    },
+    "tui": {
+      "description": "TUI",
+      "dependencies": [
+        "ncurses"
       ]
     }
   }

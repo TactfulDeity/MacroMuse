@@ -14,7 +14,26 @@
       "inherits": "base",
       "cacheVariables": {
         "BUILD_TESTS": "ON",
+        "BUILD_TUI": "OFF",
         "VCPKG_MANIFEST_FEATURES": "tests"
+      }
+    },
+    {
+      "name": "tui",
+      "inherits": "base",
+      "cacheVariables": {
+        "BUILD_TESTS": "OFF",
+        "BUILD_TUI": "ON",
+        "VCPKG_MANIFEST_FEATURES": "tui"
+      }
+    },
+    {
+      "name": "all",
+      "inherits": "base",
+      "cacheVariables": {
+        "BUILD_TESTS": "ON",
+        "BUILD_TUI": "ON",
+        "VCPKG_MANIFEST_FEATURES": "tests;tui"
       }
     }
   ],
@@ -22,12 +41,27 @@
     {
       "name": "testing",
       "configurePreset": "testing"
+    },
+    {
+      "name": "tui",
+      "configurePreset": "tui"
+    },
+    {
+      "name": "all",
+      "configurePreset": "all"
     }
   ],
   "testPresets": [
     {
       "name": "testing",
       "configurePreset": "testing",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "all",
+      "configurePreset": "all",
       "output": {
         "outputOnFailure": true
       }

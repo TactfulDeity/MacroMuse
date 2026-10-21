@@ -1,0 +1,15 @@
+{
+  "name": "macromuse",
+  "version": "0.1.0",
+  "dependencies": [
+    "nlohmann-json"
+  ],
+  "features": {
+    "tests": {
+      "description": "Test dependencies",
+      "dependencies": [
+        "catch2"
+      ]
+    }
+  }
+}

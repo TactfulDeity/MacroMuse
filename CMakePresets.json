@@ -1,0 +1,36 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "testing",
+      "inherits": "base",
+      "cacheVariables": {
+        "BUILD_TESTS": "ON",
+        "VCPKG_MANIFEST_FEATURES": "tests"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "testing",
+      "configurePreset": "testing"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "testing",
+      "configurePreset": "testing",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

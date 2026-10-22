@@ -8,6 +8,7 @@ add_executable(macromuse_tests
 
 target_link_libraries(macromuse_tests PRIVATE
     Catch2::Catch2WithMain
+    macromuser::macromuser
 )
 
 include(Catch)

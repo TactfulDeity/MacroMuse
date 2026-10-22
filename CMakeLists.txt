@@ -21,18 +21,10 @@ if(BUILD_TUI AND NOT "tui" IN_LIST VCPKG_MANIFEST_FEATURES)
         "BUILD_TUI=ON requires VCPKG_MANIFEST_FEATURES to include 'tui'.")
 endif()
 
-find_package(sol2 CONFIG REQUIRED)
-
-add_executable(macromuse
-    src/main.cpp
-)
-
-target_link_libraries(macromuse PRIVATE
-    sol2::sol2
-)
+add_subdirectory(core)
 
 if(BUILD_TUI)
-    add_subdirectory(src/ui/tui)
+    add_subdirectory(ui/tui)
 endif()
 
 if(BUILD_TESTS)

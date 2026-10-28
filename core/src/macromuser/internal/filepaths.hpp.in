@@ -1,0 +1,7 @@
+#pragma once
+
+#include <string>
+
+namespace macromuse::core{
+std::string k_data_dir = "@MACROMUSER_BINARY_DATA_DIR@";
+}

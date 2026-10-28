@@ -21,6 +21,11 @@ if(BUILD_TUI AND NOT "tui" IN_LIST VCPKG_MANIFEST_FEATURES)
         "BUILD_TUI=ON requires VCPKG_MANIFEST_FEATURES to include 'tui'.")
 endif()
 
+# Used in core
+if(NOT DEFINED MACROMUSE_DATA_DIR)
+  set(MACROMUSE_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
+endif()
+
 add_subdirectory(core)
 
 if(BUILD_TUI)

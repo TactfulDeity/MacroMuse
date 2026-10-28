@@ -1,6 +1,6 @@
 #pragma once
 
-#include "macromuser/models/Macronutrients.hpp"
+#include "macromuser/models/macronutrients.hpp"
 
 #include <string>
 #include <vector>

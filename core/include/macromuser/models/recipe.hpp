@@ -5,8 +5,10 @@
 #include <string>
 #include <vector>
 
-namespace macromuse::core {
-struct Recipe {
+namespace macromuse::core
+{
+struct Recipe
+{
   size_t id;
   std::string title;
   std::string instructions;
@@ -14,4 +16,4 @@ struct Recipe {
 
   Macronutrients nutrition;
 };
-}
+}    // namespace macromuse::core

@@ -11,4 +11,4 @@ class TwoMillionParser : public CSVParser
 public:
   int load(std::vector<Recipe>& recipeList);
 };
-}
+}    // namespace macromuse::core::parsers

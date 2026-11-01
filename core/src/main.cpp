@@ -4,44 +4,44 @@
 #include <iostream>
 
 using namespace macromuse::core;
-namespace {
-std::string f_dump_ingredients(const std::vector<std::string>& ingredientsList)
+
+namespace
+{
+std::string f_dump_ingredients(std::vector<std::string> const & ingredientsList)
 {
   std::string output = "";
-  std::for_each(ingredientsList.begin(), ingredientsList.end(), [&output](const std::string& i_string) {
+  std::for_each(ingredientsList.begin(), ingredientsList.end(), [&output](std::string const & i_string) {
     output += i_string;
   });
   return output;
 }
 
-void print_x_recipes(size_t num_to_print, const std::vector<Recipe>& recipeList)
+void print_x_recipes(size_t num_to_print, std::vector<Recipe> const & recipeList)
 {
   std::cout << "Size of recipe list: " << recipeList.size() << std::endl;
-  for(size_t i = 0; i < num_to_print; i++)
-  {
-    if(i == recipeList.size())
-    {
+  for (size_t i = 0; i < num_to_print; i++) {
+    if (i == recipeList.size()) {
       break;
     }
 
     std::cout << "--------- Recipe " << i << " ---------" << std::endl;
-    std::cout << "ID: " << recipeList[i].id << std::endl;
-    std::cout << "Name: " << recipeList[i].title << std::endl;
-    std::cout << "Ingredients List: " << ::f_dump_ingredients(recipeList[i].ingredients) << std::endl;
-    std::cout << "Instructions: " << recipeList[i].instructions << std::endl;
+    std::cout << "ID: " << recipeList [i].id << std::endl;
+    std::cout << "Name: " << recipeList [i].title << std::endl;
+    std::cout << "Ingredients List: " << ::f_dump_ingredients(recipeList [i].ingredients) << std::endl;
+    std::cout << "Instructions: " << recipeList [i].instructions << std::endl;
     std::cout << "\n" << std::endl;
   }
 }
-}
+}    // namespace
 
-int main() {
-
+int main()
+{
   std::vector<Recipe> recipeList(0);
 
   // Load the data via the csv parser
   parsers::TwoMillionParser parser{};
   int result = parser.load(recipeList);
-  if(result < 0) {
+  if (result < 0) {
     return result;
   };
 

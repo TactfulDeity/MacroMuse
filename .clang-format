@@ -62,7 +62,8 @@ BraceWrapping:
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
-  AfterRequiresExpression: true
+  # Comes in clang-format 24
+  # AfterRequiresExpression: true
   AfterStruct: true
   AfterUnion: true
   AfterExternBlock: true

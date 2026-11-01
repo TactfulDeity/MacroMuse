@@ -6,10 +6,13 @@
 
 #include <iostream>
 
-namespace {
-class NcursesSession {
+namespace
+{
+class NcursesSession
+{
 public:
-  NcursesSession() {
+  NcursesSession()
+  {
     // Initalize the library
     initscr();
 
@@ -20,7 +23,7 @@ public:
     cbreak();
 
     // Do not buffer any user input. Present all input to program
-    //raw();
+    // raw();
 
     // Enable extended character {e.g. F-keys, numpad} input
     keypad(stdscr, TRUE);
@@ -29,16 +32,18 @@ public:
     curs_set(1);
   }
 
-  ~NcursesSession() {
+  ~NcursesSession()
+  {
     // Main ncurses cleanup
     endwin();
   }
 
-  int tui() {
-    if(has_colors() == FALSE) {
-        endwin();
-        std::cout << "Your terminal doesn't support colors." << std::endl;
-        return 1;
+  int tui()
+  {
+    if (has_colors() == FALSE) {
+      endwin();
+      std::cout << "Your terminal doesn't support colors." << std::endl;
+      return 1;
     }
 
     start_color();
@@ -47,7 +52,7 @@ public:
 
     attron(COLOR_PAIR(1));
 
-    int x,y;
+    int x, y;
     getmaxyx(stdscr, y, x);
 
     y = y * 0.5;
@@ -65,9 +70,10 @@ public:
     return 0;
   }
 };
-}
+}    // namespace
 
-int main() {
+int main()
+{
   NcursesSession ncurses_session{};
 
   return ncurses_session.tui();

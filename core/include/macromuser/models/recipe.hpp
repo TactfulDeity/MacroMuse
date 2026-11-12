@@ -11,7 +11,7 @@ struct Recipe
 {
   size_t id;
   std::string title;
-  std::string instructions;
+  std::vector<std::string> instructions;
   std::vector<std::string> ingredients;
 
   Macronutrients nutrition;

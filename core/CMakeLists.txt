@@ -44,8 +44,9 @@ add_custom_target(COPY_DATA_TO_BINARY ALL
 
 find_package(sol2 CONFIG REQUIRED)
 
-add_library(macromuser SHARED)
-add_library(macromuser::macromuser ALIAS macromuser)
+add_executable(macromuser)
+# add_library(macromuser SHARED)
+# add_library(macromuser::macromuser ALIAS macromuser)
 
 add_dependencies(macromuser COPY_DATA_TO_BINARY)
 
@@ -99,7 +100,7 @@ target_sources(macromuser PRIVATE
     ${MACROMUSER_SOURCE_FILES}
     ${MACROMUSER_PUBLIC_HEADER_FILES}
     ${MACROMUSER_PRIVATE_HEADER_FILES}
-    ${MACROMUSER_EXPORT_HEADER}
+    # ${MACROMUSER_EXPORT_HEADER}
     ${MACROMUSER_FILEPATH_HEADER}
 )
 

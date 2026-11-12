@@ -11,7 +11,52 @@ using namespace macromuse::core;
 
 namespace
 {
-std::vector<std::string> f_segment_list_string(std::string const & list_string) {}
+// TODO:
+//  - Explore compiletime build up of regex objects:
+//  https://stackoverflow.com/questions/40427152/compiletime-build-up-of-stdregex
+// - Explore removing the need to copy for passing input to f_segment_list_string
+// - Optimize reserving the recipe vector
+// - Patch Recipe IDs
+
+/**
+ * @brief This function expects a list of strings from the csv and returns a new vector containing the split strings
+ * @param list_string a string consisting of a list of strings with the brackets stripped. Example:
+ * `""string_1"", ""string_2"", ..., ""string_n""`
+ * @return std::vector<std::string> a new vector of strings containing the strings with the `""""` stripped. Example:
+ * `[string_1, string_2, ..., string_n]`
+ */
+std::vector<std::string> f_segment_list_string(std::string const & list_string)
+{
+  std::vector<std::string> output = {};
+
+  /*
+   * In order to split this line we ar going to use the following regex:
+   * `\"\"([^"]*)\"\",?` - POSIX ERE flavor
+   * Validated against first list with regex101
+   *
+   * This works by searching for two back to back quotation marks then greedily capturing all characters up until the
+   * next instance of a quotation mark up to the next comma optionally
+   *
+   * ASSUMPTIONS:
+   *  - There are NO quotation mark characters in the strings themselves, escaped or otherwise. This WILL BREAK if
+   * assumption not met
+   *  - There will always be a comma character at the end of a string if another follows. Only the group before the
+   * first instance of no comma at the end will be captured
+   *
+   * There is only one group to capture here so all matches will fall in group 1 with the double quotations and commas
+   * stripped.
+   */
+  std::regex re_posix_ex(R"~(\"\"([^"]*)\"\",?)~", std::regex::extended);
+
+  for (auto iter = std::sregex_iterator{list_string.cbegin(), list_string.cend(), re_posix_ex}, last = std::sregex_iterator{};
+       iter != last;
+       ++iter) {
+    std::ssub_match const & g1match = (*iter)[1];
+    output.emplace_back(g1match.first, g1match.second);
+  }
+
+  return output;
+}
 
 Recipe f_extract_recipe_from_line(std::string const & line)
 {
@@ -37,18 +82,27 @@ Recipe f_extract_recipe_from_line(std::string const & line)
    * Match 7: `site` in group 2
    */
   std::regex re_posix_ex(R"~(\"\[([^]]*)\]\",|([^,]+),?)~", std::regex::extended);
+
   auto reg_begin = std::sregex_iterator(line.begin(), line.end(), re_posix_ex);
   auto reg_end   = std::sregex_iterator();
 
   // Match 1: `title` in group 2
-  std::smatch match = *reg_begin++;
-  recipe.title      = match [2];
+  if (std::ssub_match const & title = (*reg_begin)[2]; title.matched) {
+    recipe.title = {title.first, title.second};
+  }
+  reg_begin++;
 
   // Match 2: `ingredients` in group 1
-
+  if (std::ssub_match const & ingredients = (*reg_begin)[1]; ingredients.matched) {
+    recipe.ingredients = f_segment_list_string(ingredients.str());
+  }
+  reg_begin++;
 
   // Match 3: `directions` in group 1
-
+  if (std::ssub_match const & directions = (*reg_begin)[1]; directions.matched) {
+    recipe.instructions = f_segment_list_string(directions.str());
+  }
+  reg_begin++;
 
   // Match 4: `link` in group 2
   // not used currently
@@ -83,8 +137,8 @@ int TwoMillionParser::load(std::vector<Recipe>& recipe_list)
 
   // find the size of the file
   size_t existing_recipe_count = recipe_list.size();
-  recipe_list.reserve(
-    existing_recipe_count + std::count(std::istreambuf_iterator<char>(instrm), std::istreambuf_iterator<char>(), '\n'));
+  // recipe_list.reserve(
+  //   existing_recipe_count + std::count(std::istreambuf_iterator<char>(instrm), std::istreambuf_iterator<char>(), '\n'));
 
   /*
    * The file uses the following structuring:
@@ -113,13 +167,13 @@ int TwoMillionParser::load(std::vector<Recipe>& recipe_list)
    *
    * Tokens:
    * `No-Bake Nut Cookies`
-   * `"[""1 c. firmly packed brown sugar"", ""1/2 c. evaporated milk"", ""1/2 tsp. vanilla"", ""1/2 c. broken nuts
-   * (pecans)"", ""2 Tbsp. butter or margarine"", ""3 1/2 c. bite size shredded rice biscuits""]"`
-   * `"[""In a heavy 2-quart saucepan, mix brown sugar, nuts, evaporated milk and butter or margarine."", ""Stir over
+   * `""1 c. firmly packed brown sugar"", ""1/2 c. evaporated milk"", ""1/2 tsp. vanilla"", ""1/2 c. broken nuts
+   * (pecans)"", ""2 Tbsp. butter or margarine"", ""3 1/2 c. bite size shredded rice biscuits""`
+   * `""In a heavy 2-quart saucepan, mix brown sugar, nuts, evaporated milk and butter or margarine."", ""Stir over
    * medium heat until mixture bubbles all over top."", ""Boil and stir 5 minutes more. Take off heat."", ""Stir in
    * vanilla and cereal; mix well."", ""Using 2 teaspoons, drop and shape into 30 clusters on wax paper."", ""Let stand
-   * until firm, about 30 minutes.""]"` `www.cookbooks.com/Recipe-Details.aspx?id=44874` `Gathered`
-   * `"[""bite size shredded rice biscuits"", ""vanilla"", ""brown sugar"", ""nuts"", ""milk"", ""butter""]"`
+   * until firm, about 30 minutes.""` `www.cookbooks.com/Recipe-Details.aspx?id=44874` `Gathered`
+   * `""bite size shredded rice biscuits"", ""vanilla"", ""brown sugar"", ""nuts"", ""milk"", ""butter""`
    * `www.cookbooks.com`
    */
 
@@ -128,9 +182,16 @@ int TwoMillionParser::load(std::vector<Recipe>& recipe_list)
   // Rip headers
   std::getline(instrm, line, '\n');
 
+  // REMOVE LATER
+  size_t TEMPCAP = 10000;
+  size_t start   = 0;
+
   // start reading main file
   while (std::getline(instrm, line, '\n')) {
     recipe_list.emplace_back(::f_extract_recipe_from_line(line));
+    if (start++ >= TEMPCAP) {
+      break;
+    }
   }
 
   instrm.close();

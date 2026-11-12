@@ -187,7 +187,7 @@ SpaceBeforeParensOptions:
   AfterRequiresInExpression: true
   BeforeNonEmptyParentheses: false
 SpaceBeforeRangeBasedForLoopColon: false
-SpaceBeforeSquareBrackets: true
+SpaceBeforeSquareBrackets: false
 
 # Update post clang format 21
 SpaceInEmptyBlock: false
